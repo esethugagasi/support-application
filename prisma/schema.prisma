@@ -1,0 +1,45 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  surname   String?
+  password  String
+  cases     Case[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Case {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  status      String    @default("open")
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("cases")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("comments")
+}
